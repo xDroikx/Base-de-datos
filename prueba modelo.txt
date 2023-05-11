@@ -1,0 +1,37 @@
+1-Describe el significado de DDL, DML Y DCL
+DDL Definition Date Lenguage: Permite definir el esquema de la base de datos, creado relaciones campos indices etc.
+DML Data Manipulation Lenguage: Permite general consultas para filtrar datos, como tambien crear, modificar y borrar datos 
+DCL Data Control Lenguage Permite al administrador tener un manipular el acceso al objeto
+
+2-Las razones de cardinalidad a menudo dictaminan el diseño detallado de una base de datos.
+La razon de cardinalidad depende del significado real de los tipos de entidad implicados y queda definida por las razones especifica.
+Para las siguientes relaciones binarias,sugier las razones de cardinalidad basandose en el sentido comun de los tipos de entidad.
+Explique claramente las suposiciones que haga
+
+Estudiante---------DNI    1-1 //In estudiante posee un solo DNI
+Estudiante---------Profesor// N-N Un profesor tiene muchos estudiantes como un estudiante tiene muchos profesores de diferentes materias
+Profesor-----------Jefe de Departamento 1-N // Un Jefe de departamento es solamente uno y puede tener varios profesores a su cargo
+Vendedor-----------Ventas 1-N //  Un vendedor puede tener muchas ventas de diferentes productos 
+Aula---------------Materia 1-N // Una aula puede tener muchas materias de diferentes profesores 
+Pais---------------Presidente_Actual 1-1 // un presidente solo puede cerlo de un solo pais
+Articulo-----------Pedido N-1 // Un pedido puede tenes muchos articulos
+Empleado-----------Cargo N-1 // Un empleado tiene un cargo , pero un cargo puede tener muchos empleado por ejemplo cajeros o repositores
+Ciudad-------------Pais N-1 // Un pais puede tener varias ciudades ej : Argentina tiene varias ciudades, ciudad de mar del plata , la plata, cordoba etc
+Estudiante---------Libros N-N // es de muchos a muchos ya que un estudiante puede tener muchos libros y varios estudiantes pueden estar estudiando el mismo libro para una materia, aunque si vamos a los tangible un solo estudiante puede tener un solo tipo de libro
+
+3-1ra forma: No se da la primera forma ya que en torno a los atributos se repiten los datos de autor,nacionalidad,editorial y año (Atributos multivaluados)
+  2da forma: No hay una clave principal unica que una la tabla en su totalidad y todo atributo que no pertenesca a la clave principal no cumple esta forma
+  3ra forma: No esta normalizada en 3ra forma normal, por que no cumplen con la 2da forma y ademas las columnas de editorial y nacionalidad se podrian separar mas en el caso de que entren nuevas editoriales o nuevos libros de diferentes paises ( redundancia de datos,inconsistencia de informacion y dificultades para el filtrado y busqueda de informacion) 
+
+4-Esta en jamboard
+
+5bis- 2FN:En la segunda forma hya eliminar dependencias parciales de la clave primaria.
+
+5- ejercicios hechos en heidi:
+
+SELECT descripcion,precio,precio*1.10 AS preciototal FROM carta;  # 1er ejercicio
+SELECT descripcion,categoria FROM carta WHERE categoria = 1 OR categoria = 3 OR categoria = 5 ; # 2do  ejercicio
+SELECT mesa.id,mesa.ubicacion,carta.descripcion FROM mesa INNER JOIN pedido ON mesa.id = pedido.id
+INNER JOIN carta ON pedido.id_carta = carta.id WHERE carta.descripcion = "tarta atun"; # 3er ejercicio
+SELECT DISTINCT mesa.id,mesa.ubicacion from mesa INNER JOIN pedido ON mesa.id = pedido.id_Mesa; # 4to ejercicio
+select DISTINCT categoria FROM carta; # 5to ejercicio

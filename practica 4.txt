@@ -1,0 +1,28 @@
+#1. Nombres de autores
+SELECT nombre FROM autor;
+#2. Nombres de autores ordenados por fecha de nacimiento (de manera ascendente)
+SELECT nombre,fecha_nacimiento FROM autor ORDER BY fecha_nacimiento ASC;
+#3. Nombres de autores y títulos de los libros que han escrito
+SELECT a.nombre,l.titulo FROM autor a INNER JOIN Libro_autor la ON a.id_autor=la.id_autor INNER JOIN libro l ON la.isbn=l.isbn;  
+#4. Cantidad de autores nacidos antes de 1940 *
+SELECT COUNT(*) nombre,nombre,fecha_nacimiento FROM autor WHERE fecha_nacimiento < "1940-01-01";
+#5. Nombres de autores e id de Editoriales de los libros que escribieron
+SELECT a.nombre,l.id_editorial FROM autor a INNER JOIN Libro_autor la ON a.id_autor=la.id_autor INNER JOIN libro l ON la.isbn=l.isbn;
+#6. Nombres de autores e id de Editoriales de los libros que escribieron sin filas repetidas *
+SELECT distinct a.nombre,l.id_editorial FROM autor a INNER JOIN Libro_autor la ON a.id_autor=la.id_autor INNER JOIN libro l ON la.isbn=l.isbn;
+#7. Nombres de autores y Nombre de la editorial de los libros que escribieron (sin repetir) *
+SELECT DISTINCT a.nombre, e.nombre FROM autor a INNER JOIN Libro_autor la ON a.id_autor=la.id_autor INNER JOIN libro l ON la.isbn=l.isbn 
+INNER JOIN editorial e ON l.id_editorial=e.id_editorial ;
+#8. Nombres de autores con libros editados en Madrid
+SELECT DISTINCT a.nombre, e.ciudad FROM autor a INNER JOIN Libro_autor la ON a.id_autor=la.id_autor INNER JOIN libro l ON la.isbn=l.isbn 
+INNER JOIN editorial e ON l.id_editorial=e.id_editorial WHERE ciudad = "Madrid" ;
+#9. Nombres de editoriales que no tengan libros asociados
+SELECT e.nombre FROM editorial e LEFT JOIN libro l ON l.id_editorial=e.id_editorial WHERE l.isbn IS null;
+#10.Cantidad de editoriales *
+SELECT COUNT(nombre) FROM editorial;
+#11.Ciudad y Cantidad de editoriales agrupadas por ciudad 
+SELECT COUNT(nombre),ciudad FROM editorial GROUP BY ciudad;
+#12. Ciudad y Cantidad de editoriales agrupadas por ciudad, siempre que la ciudad tenga más de un libro escrito 
+SELECT COUNT(e.nombre),e.ciudad FROM editorial e INNER JOIN libro l on e.id_editorial=l.id_editorial 
+GROUP BY ciudad 
+HAVING COUNT(l.isbn)> 1 ;

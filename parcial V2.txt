@@ -1,0 +1,25 @@
+#1.Color de bote y cantidad de remeros que lo hayan alquilado, siempre el promedio de edad de los remeros que lo hayan alquilado sea menor a 23
+SELECT b.color,a.id_remero AS cantidad_de_remeros FROM bote b INNER JOIN alquiler a ON b.id = a.id_bote INNER JOIN remero r ON a.id_remero = r.id
+WHERE edad < 23
+GROUP BY color;                                     
+
+#2.Nombre de remero y cantidad de alquileres que realizó para remeros mayores a 21 años, siempre que hayan alquilado 2 o más botes distintos
+SELECT r.nombre, COUNT(a.id) AS alquileres FROM remero r INNER JOIN alquiler a ON r.id = a.id_remero
+WHERE r.edad > 21
+GROUP BY nombre
+HAVING count(DISTINCT a.id_bote)>=2;
+
+#3.Nombre de remeros que hayan alquilado botes rojos
+SELECT r.nombre, b.color FROM remero r INNER JOIN alquiler a ON r.id = a.id_remero INNER JOIN bote b ON a.id_bote = b.id
+WHERE color = "Rojo"
+GROUP BY nombre;
+#4.Color de bote y cantidad de alquileres que tuvo
+SELECT b.color,COUNT(a.id) AS veces_alquilado FROM bote b INNER JOIN alquiler a ON b.id = a.id_bote
+GROUP BY color;
+#5.Nombre de remero que no haya alquilado botes (puede no haber resultados) 
+SELECT r.nombre, a.id_bote FROM remero r INNER JOIN alquiler a ON r.id = a.id_remero
+WHERE a.id IS NULL;
+
+#6.¿Cómo puedo verificar, con los datos que hay en cada tabla, el resultado de la consulta anterior? 
+#(Se espera una explicación, consultas, lo que sea necesario para demostrar cómo justificar el resultado que tiene la consulta anterior) *
+SELECT * FROM remero r RIGHT OUTER JOIN alquiler a ON r.id = a.id_remero; 

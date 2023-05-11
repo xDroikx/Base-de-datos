@@ -1,0 +1,66 @@
+#Mostrar todas las tablas y la estructura (DESCRIBE y SHOW TABLES)
+
+#1) Mostrar todos los datos de la tabla libro 
+SELECT * FROM libro;
+#2) Seleccionar solamente el isbn y el titulo de la tabla Libros 
+SELECT isbn, titulo FROM libro;
+#3) Seleccionar el isbn. el titulo y el precio con nombre "Precio del Libro" de la tabla Libros 
+SELECT isbn, titulo, precio AS "Precio del Libro" FROM libro;
+#4) Mostrar todos los datos de aquellos Libros con editorial 5 
+SELECT * FROM libro WHERE id_editorial=5;
+#5) Mostrar la lista de precios con un 15% de aumento (alias "Precio total")
+SELECT precio, precio1.15 FROM libro;
+#6) Mostrar los autores cuya fecha de nacimiento es anterior a 1950
+SELECT id_autor FROM autor WHERE fecha_nacimiento <"1950-01-01";
+
+#Logical Operators: AND, OR, and NOT
+
+#7) Mostrar el titulo y el precio de aquellos libros cuya precio se encuentre entre 100 y 200
+SELECT titulo, precio FROM libro WHERE precio>=100 and precio<=200;
+#8) Repetir el ejercicio anterior, utilizando BETWEEN
+SELECT titulo, precio FROM libro WHERE precio BETWEEN 100 AND 200;
+#9) Mostrar el nombre y la ciudad de aquellas editoriales situadas en Buenos Aires o Cordoba
+SELECT nombre, ciudad FROM editorial WHERE ciudad= "Buenos Aires" or ciudad= "Cordoba"; 
+
+#utilizando IN
+#10)Queremos recuperar los libros que no cumplan la condición dada, por ejemplo, aquellos cuya editorial NO sea 2
+SELECT FROM libro WHERE NOT  id_editorial=2; 
+#11) Mostrar todos los datos de los libros llamados Sistemas Operativos
+SELECT * FROM libro WHERE titulo like "Sistemas Operativos";
+#12) Repetir el ejercicio anterior, pero con aquellos que no se llamen Sistemas Operativos
+SELECT * FROM libro WHERE titulo not LIKE "Sistemas Operativos";
+#13) Mostrar todos los datos de los libros cuyo nombre comience con Sis
+SELECT * FROM libro WHERE titulo LIKE "Sis%";
+#14) Mostrar todos los datos de los libros cuyo nombre termine con s
+SELECT * FROM libro WHERE titulo LIKE "%s";
+#15) Mostrar todos los datos de los libros cuyo nombre contenga una M
+SELECT * FROM libro WHERE titulo LIKE "%M%";
+
+#LIMIT Y ORDER BY
+#16)Lista los nombres de los autores ordenados de forma ascendente.
+SELECT nombre FROM autor ORDER BY nombre ASC;
+#17)Lista los nombres de los autores  ordenados de forma descendente.
+SELECT nombre FROM autor ORDER BY nombre DESC;
+#18)Lista los titulos de los libros ordenados en primer lugar por el titulo de forma ascendente y en segundo lugar por el precio de forma descendente.
+SELECT titulo, precio FROM libro ORDER BY titulo ASC, precio DESC;
+#19)Devuelve una lista con las 3 primeras filas de la tabla editoriales.
+SELECT * FROM editorial LIMIT 3;
+#20) Lista el titulo y el precio del libro más barato. (Utilice solamente las cláusulas ORDER BY y LIMIT)
+SELECT titulo, precio FROM libro ORDER BY precio ASC LIMIT 1;
+#21)Lista el titulo y el precio del libro más caro. (Utilice solamente las cláusulas ORDER BY y LIMIT)
+SELECT titulo, precio FROM libro ORDER BY precio desc LIMIT 1;
+
+#DISTINCT
+#22) Mostrar las editoriales diferentes están representados actualmente en la tabla LIBRO
+SELECT distinct id_editorial FROM libro; 
+
+#USO DE IS NULL / IS NOT NULL
+
+#23) Mostrar todos los datos de los libros que tengan precio.
+SELECT isbn, titulo, id_editorial, precio FROM libro WHERE precio IS NOT NULL;
+#24) Mostrar todos los datos de los libros que no tengan precio.
+SELECT isbn, titulo, id_editorial, precio FROM libro where precio IS NULL;
+#USOS DE JOIN Y ALIAS PARA TABLAS Y CAMPOS
+
+#25) Mostrar  los libros y sus datos de editoriales
+SELECT * FROM libro INNER JOIN editorial ON libro.id_editorial= editorial.id_editorial; 

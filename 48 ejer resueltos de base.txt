@@ -1,0 +1,130 @@
+#1. Listar código, nombre, continente y población de todos los países. (Se esperan 4 columnas y 239 registros).
+SELECT code,continent,NAME ,population FROM country;
+#2. Listar solo el nombre de todos los lenguajes distintos que existan. (Se espera 1 columna y 457 registros).
+SELECT distinct LANGUAGE FROM countrylanguage;
+#3. Listar nombre y población de cada ciudad, con los nombres de las columnas en castellano. (Se esperan 2 columnas y 4079 registros).
+SELECT NAME AS nombre, population AS poblacion FROM city; 
+#4. Listar el nombre, el GNP como 'Producto Bruto Nacional', el GNPOld como'Producto Bruto Nacional Anterior' y la diferencia entre estos como 'Diferencia',para todos los países. (Se esperan 4 columnas y 239 registros).
+select NAME,gnp,gnpold ,sum(gnp-gnpold) AS diferencia FROM country
+GROUP BY NAME;
+#5. Listar el nombre, la cantidad de habitantes, la superficie y una columna llamada'Densidad' con el resultado de la densidad poblacional de todos los países. (Se esperan 4 columnas y 239 registros).
+SELECT NAME, population, surfacearea,sum(population/surfacearea) AS densidad FROM country
+GROUP BY NAME;
+#6. Listar toda la información de los países, ordenados por población de manera ascendente. (Se esperan 15 columnas y 239 registros).
+SELECT * FROM country ORDER by population asc;
+#7. Listar nombre de los lenguajes en orden alfabético. (Se espera 1 columna y 984 registros).
+SELECT LANGUAGE FROM countrylanguage ORDER BY LANGUAGE ASC;
+#8. Listar nombre y cantidad de habitantes de las veinte ciudades menos pobladas.(Se esperan 2 columnas y 20 registros).
+SELECT NAME,population FROM city ORDER BY population LIMIT 20;
+#9. Listar código, nombre y año de independencia de todos los países, ordenados por antigüedad descendente. (Se esperan 3 columnas y 239 registros).
+SELECT CODE ,NAME,indepyear FROM country ORDER BY indepyear DESC;
+#10. Listar nombre y continente de los cien países con mayor expectativa de vida. Si hubiera países que tengan la misma expectativa de vida, mostrar primero a los de menor superficie. (Se esperan 2 columnas y 100 registros).
+SELECT NAME,continent FROM country ORDER BY LifeExpectancy asc, surfacearea desc LIMIT 100;
+#11. Listar todos los datos de los países que no cuenten con habitantes. (Se esperan columnas y 7 registros).
+SELECT * FROM country WHERE population = 0;
+#12. Listar todos los datos de los países cuya expectativa de vida supere los setenta y cinco años, ordenados bajo este concepto de forma ascendente. (Se esperan 15 columnas y 62 registros).
+select * FROM country WHERE LifeExpectancy > 75 ORDER BY LifeExpectancy;
+#13. Listar todos los datos de los países cuya independencia haya ocurrido a partir de la segunda mitad del siglo XIX y su forma de gobierno sea una monarquía constitucional. (Se esperan 15 columnas y 20 registros).
+SELECT * FROM country WHERE indepyear > 1850 AND GovernmentForm = "Constitutional Monarchy";
+#14. Listar todos los datos de los diez países europeos de mayor PBN. (Se esperan 15 columnas y 10 registros).
+SELECT * FROM country WHERE continent = "europe" ORDER BY gnp desc LIMIT 10;                                   
+#15. Listar todos los datos de los países cuyo nombre registrado coincida con su nombre local. (Se esperan 15 columnas y 104 registros).
+select * FROM country where NAME = localname;
+#16. Listar todos los datos de los países cuya independencia se haya dado a partir de la segunda mitad del siglo XX. (Se esperan 15 columnas y 110 registros).
+select * FROM country WHERE indepyear > 1950;
+#17. Listar todos los datos de los países situados en Europa, Asia o Sudamérica. (Se esperan 15 columnas y 111 registros).
+select * FROM country WHERE continent = "Europe" or continent ="Asia" or continent = "South America";
+select * FROM country WHERE continent NOT IN("Europe","Asia","South America")
+ 
+#18. Listar todos los datos de todos los países, excepto los africanos. (Se esperan 15 columnas y 181 registros).
+select * FROM country WHERE continent != "Africa";
+#19. Listar todos los datos de las ciudades argentinas fuera de la provincia de Buenos Aires. (Se esperan 5 columnas y 26 registros).
+select * FROM city WHERE CountryCode = "arg" AND district != "Buenos Aires";                           
+#20. Listar todos los datos de las ciudades de entre 125 mil y 130 mil habitantes. (Se esperan 5 columnas y 138 registros).
+select * FROM city WHERE population BETWEEN 125000 AND 130000;
+#21. Listar todos los datos de los países donde no se cuente con datos acerca de suindependencia. (Se esperan 15 columnas y 47 registros).
+select * FROM country WHERE indepyear IS NULL;
+#22. Listar todos los datos de los países donde no se tengan datos acerca del PBN anterior ni de la expectativa de vida. (Se esperan 15 columnas y 17 registros).
+select * FROM country WHERE gnpold IS NULL AND LifeExpectancy IS null;
+#23. Listar todos los datos de los países cuyo nombre comience y termine con 'A'.(Se esperan 15 columnas y 13 registros).
+select * FROM country WHERE NAME LIKE "a%a";
+#24. Listar todos los datos de los países cuyo nombre sea compuesto (más de una palabra). (Se esperan 15 columnas y 66 registros).
+select * FROM country WHERE NAME LIKE "% %";
+#25. Listar todos los datos de las ciudades cuyo nombre o distrito contengan un '-'(guión medio). (Se esperan 5 columnas y 372 registros).
+select * FROM city WHERE NAME LIKE "%-%" OR district LIKE "%-%";
+#26. Listar los nombres de los países sudamericanos junto a los nombres (alias'Capital') de sus capitales. (Se esperan 2 columnas y 14 registros)
+SELECT c.NAME AS pais, i.name AS capital FROM country c INNER JOIN city i ON c.code = i.countrycode WHERE continent = "South America" 
+GROUP BY c.name;                                        
+#27. Listar el código de país, junto a los nombres de las ciudades y su cantidad de habitantes, de aquellos cuya expectativa de vida sea mayor a 80. (Se esperan 3 columnas y 253 registros).
+SELECT c.code,i.countrycode,c.population FROM country c INNER JOIN city i ON c.code = i.countrycode WHERE LifeExpectancy > 80;
+#28. Listar las capitales de los países cuya forma de gobierno sea una República Federal. (Se esperan 2 columnas y 15 registros)
+SELECT name,capital FROM country WHERE GovernmentForm = "Federal Republic";
+#29. Listar los lenguajes oficiales, junto al nombre de sus respectivos países, donde la cantidad de habitantes de dicho país esté entre un millón y tres millones. (Se esperan 2 columnas y 14 registros).
+SELECT c.Name,l.language FROM country c INNER JOIN city i ON c.code = i.countrycode INNER JOIN countrylanguage l ON i.countrycode = l.countrycode WHERE c.population between 1000000 AND 3000000
+GROUP BY c.Name;
+#30. Listar los códigos, los nombres locales y la región a la que pertenecen aquellos países donde se hable español. (Se esperan 3 columnas y 28 registros).
+SELECT c.code,c.localname,c.region FROM country c INNER JOIN city i ON c.code = i.countrycode INNER JOIN countrylanguage l ON i.countrycode = l.countrycode 
+WHERE LANGUAGE = "Spanish" GROUP BY c.code;
+#31. Listar los nombres y las capitales de los países en cuya capital se concentre más de la mitad de su población total. (Se esperan 2 columnas y 14 registros).
+SELECT c.name,i.name FROM country c INNER JOIN city i ON c.code = i.countrycode
+WHERE i.population >(c.population/2)
+#32. Listar los nombres y la superficie de los países africanos cuya capital coincida con el nombre del distrito a la que pertenece. (Se esperan 2 columnas y 32 registros).
+SELECT c.name,c.surfacearea from country c INNER JOIN city i ON c.code = i.countrycode
+WHERE c.continent = "africa" AND i.district = i.name
+group by c.name;
+#33. Listar los nombres, las capitales y el año de independencia (sin nulos) de los 20 países más antiguos. (Se esperan 3 columnas y 20 registros).
+SELECT c.NAME ,i.NAME,c.indepyear from country c INNER JOIN city i ON c.code = i.countrycode
+WHERE c.indepyear IS NOT NULL ORDER BY c.indepyear ASC LIMIT 20;
+#34. Listar las ciudades junto a sus idiomas oficiales, donde no se hable español, inglés, portugués, italiano, francés o alemán de manera oficial. (Se esperan 2 columnas y 2694 registros).
+SELECT c.Name,l.language  FROM city c INNER JOIN  countrylanguage l ON c.countrycode = l.countrycode
+WHERE l.LANGUAGE NOT IN ("spanish","english","Portuguese","Italian","French","German")
+GROUP BY c.name;                                       
+SELECT c.Name,l.language  FROM city c INNER JOIN  countrylanguage l ON c.countrycode = l.countrycode
+WHERE l.LANGUAGE !="spanish" and l.LANGUAGE !="english" AND l.LANGUAGE !="Portuguese"AND l.LANGUAGE !="Italian"AND l.LANGUAGE !="French" AND l.LANGUAGE !="German"
+GROUP BY c.name; 
+#35. Listar nombre, población y país de las diez ciudades europeas de habla inglesa más pobladas. (Se esperan 3 columnas y 10 registros).
+SELECT c.name,c.population,i.name FROM country c INNER JOIN city i ON c.code = i.countrycode INNER JOIN  countrylanguage l ON i.countrycode = l.countrycode
+WHERE c.continent= "Europe" AND l.language = "english"
+ORDER BY c.population DESC LIMIT 10;
+#36. Mostrar según la tabla de países, la cantidad total de población, la población máxima, la población mínima, el promedio de población y con cuántos registros de población se cuenta. (Se esperan 5 columnas y 1 registro).
+SELECT NAME, MAX(population) AS poblacion_maxima, MIN(population) AS poblacion_minima, AVG(population) AS poblacion_promedio,COUNT(population) AS registro FROM country
+#37. Mostrar según la tabla de países, la cantidad total de población, la población máxima, la población mínima y el promedio de población, por cada continente. (Se esperan 5 columnas y 7 registros).
+SELECT NAME, MAX(population) AS poblacion_maxima, MIN(population) AS poblacion_minima, AVG(population) AS poblacion_promedio,COUNT(population) AS registro FROM country
+GROUP BY continent;
+#38. Agrupar a todos los países según el continente al que pertenecen. Mostrar los continentes junto a la cantidad de naciones que pertenecen a cada uno. (Se esperan 2 columnas y 7 registros).
+SELECT continent,count(NAME) FROM country
+GROUP BY continent;
+#39. Agrupar a todas las ciudades según el país al que pertenecen. Mostrar los códigos de países junto a la sumatoria total de habitantes de cada uno. (Se esperan 2 columnas y 232 registros).
+SELECT name,COUNT(population) FROM city
+GROUP BY countrycode;
+#40. Agrupar a todos los lenguajes según su nombre. Mostrar los nombres de los lenguajes junto al porcentaje de habla mínimo registrado para cada uno. (Se esperan 2 columnas y 457 registros).
+SELECT LANGUAGE ,percentage AS porcentaje FROM countrylanguage
+GROUP BY LANGUAGE;
+#41. Mostrar las distintas formas de gobierno posibles de los países europeos junto a su correspondiente promedio de población que vive bajo estas circunstancias. (Se esperan 2 columnas y 10 registros).
+SELECT GovernmentForm,AVG(population) FROM country 
+WHERE continent = "Europe"
+GROUP BY GovernmentForm
+HAVING AVG(population);
+#42. Mostrar las diez regiones de mayor expectativa de vida promedio. (Se esperan 2 columnas y 10 registros).
+select region,LifeExpectancy from country ORDER BY LifeExpectancy desc LIMIT 10;
+#43. Mostrar los nombres de los diez distritos de mayor cantidad de ciudades con cantidad de habitantes mayor al medio millón, junto a la cantidad de ciudades. (Se esperan 3 columnas y 10 registros).
+SELECT district,population,COUNT(NAME) AS ciudades FROM city
+WHERE population > 500000 
+GROUP by district  LIMIT 10;                                                            
+#44. Mostrar los nombres de los países que tengan ciudades en el Caribe, junto al número de las mismas por país. (Se esperan 2 columnas y 24 registros).
+SELECT c.NAME,i.name from country c INNER JOIN city i ON c.code = i.countrycode 
+WHERE c.region = "Caribbean"
+GROUP BY c.name;                      
+#45. Mostrar los lenguajes existentes junto a la cantidad de países que lo hablan de manera oficial. (Se esperan 2 columnas y 102 registros).
+SELECT l.LANGUAGE,COUNT(c.name) FROM country c INNER JOIN city i ON c.code = i.countrycode INNER JOIN countrylanguage l ON i.countrycode = l.countrycode
+WHERE isofficial = "t"
+GROUP BY l.LANGUAGE;
+#46. Mostrar listados los años de independencia (sin nulos) junto a la cantidad de países que la hayan conseguido en ese año. Se desea visualizar aquellos años donde más de un país se haya independizado. (Se esperan 2 columnas y 39 registros).
+SELECT indepyear,COUNT(name) FROM country
+WHERE indepyear IS not NULL
+GROUP BY indepyear
+HAVING COUNT(name)>1;
+#47. Listar los países junto a la cantidad de idiomas diferentes hablados, pero solo aquellos donde se hablen entre tres y cinco idiomas diferentes. (Se esperan 2 columnas y 80 registros).
+SELECT c.name,COUNT(l.LANGUAGE) FROM country c INNER JOIN city i ON c.code = i.countrycode INNER JOIN countrylanguage l ON i.countrycode = l.countrycode
+GROUP BY c.name
+HAVING COUNT( distinct l.LANGUAGE) BETWEEN 3 AND 5 ;

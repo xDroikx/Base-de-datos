@@ -1,0 +1,24 @@
+#1. Ubicación de mesas con pedidos realizados. La consulta debe devolver una fila por mesa, sin repeticiones.
+SELECT distinct m.ubicacion FROM mesa m INNER JOIN pedido p ON m.id=p.id 
+#2. Id de mesa y descripción de cada ítem de la carta de sus pedidos
+SELECT m.id,c.descripcion FROM mesa m INNER JOIN pedido p ON m.id=p.id
+INNER JOIN carta c ON p.id=c.id;
+#3. Descripción de los elementos de la carta y cantidad de ítems pedidos para cada uno
+SELECT count(p.id_carta) ,c.descripcion FROM carta c INNER JOIN pedido p ON c.id=p.id 
+GROUP BY c.descripcion;
+#4. Id de mesa y precio total de la orden realizada
+SELECT p.id_mesa,c.precio,SUM(c.precio*p.id_mesa)AS precio_total FROM pedido p INNER JOIN carta c ON p.id=c.id
+GROUP BY p.id;
+#5. Descripción del ítem de la carta y cantidad de mesas que lo pidieron, siempre que el ítem haya participado de pedidos de más de dos mesas (distintas)
+SELECT c.descripcion, p.id_mesa FROM carta c INNER JOIN pedido p ON p.id=c.id
+GROUP BY p.id_mesa 
+HAVING count(p.id_mesa) >2;
+#6. Id, ubicación y precio total del pedido de las mesas que hayan pedido al menos tres elementos distintos de la carta
+SELECT m.id, m.ubicacion ,c.precio, sum(c.precio*p.id_carta)AS precio_total,p.id_carta FROM mesa m INNER JOIN pedido p ON m.id=p.id INNER JOIN carta c on p.id=c.id
+WHERE id_carta > 3  
+GROUP BY m.id
+HAVING COUNT(distinct p.id_carta);
+#7. Ubicación de la mesa y precio más barato de ítem que haya pedido, siempre que la mesa tenga 2 o menos ítems pedidos.
+SELECT  m.ubicacion ,MIN(c.precio),p.id_carta FROM mesa m INNER JOIN pedido p ON m.id=p.id INNER JOIN carta c on p.id=c.id
+WHERE id_carta <=2
+GROUP BY m.id;
