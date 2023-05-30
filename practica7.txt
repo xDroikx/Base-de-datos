@@ -1,0 +1,103 @@
+#CREATE DATABASE practica7 creacion de la base de dato
+use practica7; #Creacion de tablas y columnas /esquema
+CREATE TABLE libros(
+isbn INT NOT NULL PRIMARY key,
+titulo VARCHAR(90),
+id_editorial int NOT NULL,
+precio DECIMAL(8.2));
+
+CREATE TABLE editoriales(
+id_editorial int NOT NULL PRIMARY KEY auto_increment,
+nombre VARCHAR(90),
+telefono VARCHAR(30),
+ciudad VARCHAR(90));
+
+CREATE TABLE autores( 
+id_autor int NOT NULL PRIMARY KEY auto_increment,
+nombre VARCHAR(90),
+fecha_nacimiento datetime
+);
+
+CREATE TABLE libros_autores(
+id_relacion int NOT NULL PRIMARY KEY auto_increment,
+isbn INT NOT NULL,
+id_autor int NOT NULL);
+
+INSERT INTO libros VALUES(2100,'Cielo muerto sol negro',1,12500.00);
+INSERT INTO libros VALUES(2101,'El rey amarillo',2,11000.00);
+INSERT INTO libros VALUES(2102,'El eternauta',3,9500.00);
+INSERT INTO libros VALUES(2103,'All tomorrow',4,9000.00);
+
+INSERT INTO editoriales VALUES(1,'Timunmas','4769-1289','York');
+INSERT INTO editoriales VALUES(2,'Planeta','4765-2365','Buenos Aires');
+INSERT INTO editoriales VALUES(3,'Roca','4896-3285','Madrid');
+INSERT INTO editoriales VALUES(4,'Delcarton','4168-5896','Filipinas');
+
+insert into autores (nombre, fecha_nacimiento) values ('MC Graham', '1963-06-21'); #para usar el auto increment debe colocarse los nombres de las columnas
+insert into autores (nombre, fecha_nacimiento) values ('Robert Chamber', '1949-05-13');
+insert into autores (nombre, fecha_nacimiento) values (' Germán Oesterheld', '1987-03-23');
+insert into autores (nombre, fecha_nacimiento) values ('C. M. Kosemen', '1987-02-14');
+
+insert into libros_autores (isbn,id_autor) VALUES (2100,1);
+insert into libros_autores (isbn,id_autor) VALUES (2101,2);
+insert into libros_autores (isbn,id_autor) VALUES (2102,3);
+insert into libros_autores (isbn,id_autor) VALUES (2103,4);
+insert into libros_autores (isbn,id_autor) VALUES (2104,5);
+
+CREATE TABLE revistas(
+rsbn int NOT NULL PRIMARY KEY,
+nombre_revista VARCHAR(90)NULL,
+id_editorial int NOT NULL,
+precio DECIMAL (8,2));
+
+insert into revistas (rsbn,nombre_revista,id_editorial,precio) VALUES (5900,'Cagon',5,800);
+insert into revistas (rsbn,nombre_revista,id_editorial,precio) VALUES (5901,'Gente',6,500);
+insert into revistas (rsbn,nombre_revista,id_editorial,precio) VALUES (5902,'Caras',7,600);
+insert into revistas (rsbn,nombre_revista,id_editorial,precio) VALUES (5903,'Men',8,1100);
+
+INSERT INTO editoriales VALUES(9,'Mamon','4123-5656','Uganda');
+INSERT INTO editoriales VALUES(10,'La Wea','4763-5612','Isla de pascua');
+
+create VIEW publicaciones AS 
+SELECT l.isbn,l.precio FROM libros l WHERE l.precio<10000
+UNION 
+select r.rsbn, r.precio FROM revistas r WHERE r.precio<1000;
+
+create VIEW editoriales_sin_publicaciones AS 
+SELECT e.nombre FROM editoriales e WHERE NOT EXISTS(SELECT * FROM libros l WHERE l.id_editorial = e.id_editorial
+UNION
+SELECT * FROM revistas r WHERE r.id_editorial = e.id_editorial);
+
+ALTER TABLE revistas r MODIFY COLUMN r.nombre_revista VARCHAR(250);
+
+UPDATE libros l SET l.precio = l.precio * 1.15 ;
+
+DELETE FROM libros  WHERE precio > 12000; #no colocar referencias como "l" por que da error
+
+insert into autores (nombre, fecha_nacimiento) values ('El williyrex', '2010-03-12');
+
+SELECT * FROM revistas 
+INSERT INTO autores (isbn, id_autor)
+SELECT rsbn,1 FROM revistas 
+SELECT * FROM libros_autores ;
+
+#12) Realizar una consulta que devuelva a los autores que hayan participado en la redacción de más de una publicación
+
+SELECT nombre FROM autores a INNER JOIN libros_autores la ON a.id_autor = la.id_autor 
+GROUP BY la.id_autor
+having COUNT(la.isbn) > 1; 
+
+#13) Generar una tabla "publicacion_un_autor" similar a libros y luego agregar aquellas publicaciones que tengan un sólo autor
+create table publicacion_un_autor( 
+isbn INT NOT NULL PRIMARY key,
+titulo VARCHAR(90),
+id_editorial int NOT NULL,
+precio DECIMAL(8.2))
+
+insert into publicacion_un_autor (isbn,titulo,id_editorial,precio)
+SELECT * FROM libros l WHERE isbn IN (SELECT isbn FROM libros_autores 
+GROUP BY isbn
+HAVING COUNT(id_autor) =1);
+
+#14) Eliminar la vista publicación
+drop VIEW publicaciones practica7
