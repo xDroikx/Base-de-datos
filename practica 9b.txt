@@ -1,0 +1,82 @@
+CREATE DATABASE practica9b;
+
+CREATE TABLE empleado(
+emp_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+emp_nombre VARCHAR(255),
+emp_edad int
+); 
+
+CREATE TABLE proyecto(
+pro_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+pro_descripcion VARCHAR(255)
+); 
+
+CREATE TABLE asignacion(
+asi_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+emp_id int,
+pro_id INT,
+asi_fecha DATETIME,
+asi_cant_horas double
+);
+
+INSERT INTO empleado (emp_nombre,emp_edad) VALUES 
+('Roberto',61), 
+('Mauricio',36), 
+('Karina',49), 
+('Esteban',28), 
+('Mariano',56);
+
+INSERT INTO proyecto (pro_descripcion) VALUES 
+('Zaragosa'), 
+('Pulim'),
+('Stellar'),
+('Morning');
+
+CREATE TABLE semana_completa(
+dia date
+)
+
+/*3.	Crear una tabla temporal SEMANA_COMPLETA, que tenga una fila por día de una semana laboral a elección. Queda a criterio del alumno la definición de las columnas que necesite.
+Se espera que tenga 5 filas que contengan como mínimo la fecha de cada día de una semana.*/
+
+insert INTO semana_completa (dia) VALUES 
+
+(DATE_ADD(NOW(), INTERVAL 1 DAY)),
+(DATE_ADD(NOW(), INTERVAL 2 DAY)), 
+(DATE_ADD(NOW(), INTERVAL 3 DAY)), 
+(DATE_ADD(NOW(), INTERVAL 4 DAY)),
+(DATE_ADD(NOW(), INTERVAL 5 DAY));  
+
+#4.	Insertar para 2 proyectos y para 3 empleados, asignaciones de 4 horas durante la semana representada en el punto 3
+
+INSERT INTO asignacion (emp_id,pro_id,asi_fecha,asi_cant_horas)
+SELECT e.emp_id,p.pro_id,sc.dia,4 FROM empleado e,proyecto p,semana_completa sc WHERE e.emp_id IN (1,2,3) AND p.pro_id IN (1,2) 
+
+#5.	Insertar para los 2 proyectos restantes y los 2 empleados restantes asignaciones de 4 horas durante la semana representada en el punto 3.
+
+INSERT INTO asignacion (emp_id,pro_id,asi_fecha,asi_cant_horas)
+SELECT e.emp_id,p.pro_id,sc.dia,4 FROM empleado e,proyecto p,semana_completa sc WHERE e.emp_id IN (4,5) AND p.pro_id IN (3,4) 
+
+#6.	Determinar por medio de una consulta cuáles son los proyectos en los cuales trabajaron más de dos empleados
+
+SELECT count(distinct emp_id) AS empleados,pro_id AS proyectos FROM asignacion 
+GROUP BY pro_id
+HAVING count(distinct emp_id)>2                                                                       
+
+/*7.	Crear una tabla RESUMEN_PROYECTO, con esquema < pro_id: int, pro_descripcion: varchar(255), horas_totales:double, cantidad_empleados: int >,
+ y lograr que contenga por cada fila a cada proyecto, 
+ la cantidad total de horas trabajadas para tal proyecto y la cantidad de empleados involucrados en el mismo.*/
+
+CREATE TABLE RESUMEN_PROYECTO(
+pro_id INT,
+pro_descripcion varchar(255),
+horas_totales DOUBLE,
+cantidad_empleados INT);
+
+INSERT INTO RESUMEN_PROYECTO(pro_id,pro_descripcion,horas_totales,cantidad_empleados)
+SELECT p.pro_id,p.pro_descripcion,SUM(a.asi_cant_horas),COUNT(distinct a.emp_id) FROM proyecto p INNER JOIN asignacion a ON p.pro_id=a.pro_id
+GROUP BY pro_descripcion;
+
+#8.	Generar una consulta SQL para obtener los empleados que no estén asignados a ningún proyecto
+SELECT e.emp_id FROM empleado e WHERE NOT EXISTS(SELECT * FROM asignacion a WHERE e.emp_id = a.emp_id);
+

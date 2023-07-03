@@ -1,0 +1,137 @@
+CREATE DATABASE practica7b
+
+create table libro (
+  isbn int not null primary key,
+  titulo varchar(90),
+  id_editorial int,
+  precio decimal(8,2)
+);
+
+create table editorial (
+  id_editorial int not null  primary key auto_increment,
+  nombre varchar(90),
+  telefono varchar(20),
+  ciudad varchar(50)
+);
+
+create table autor (
+  id_autor int not null auto_increment primary key ,
+  nombre varchar(90),
+  fecha_nacimiento datetime
+);
+
+create table libro_autor (
+  id_relacion int not null auto_increment primary key,
+  isbn int not null,
+  id_autor int not null
+);
+
+
+insert into libro (isbn, titulo, id_editorial, precio) values (11328, 'Admini de Bases de Datos', 1, 130.48);
+insert into libro (isbn, titulo, id_editorial, precio) values (11329, 'Intro a las bases de datos Relacionales', 3, 258.39);
+insert into libro (isbn, titulo, id_editorial, precio) values (11341, 'Sistemas de Gestion de Bases de Datos', 2, 220.31);
+insert into libro (isbn, titulo, id_editorial, precio) values (21328, 'Sistemas Operativos', 4, 208);
+insert into libro (isbn, titulo, id_editorial, precio) values (21312, 'Redes Neuronales Aplicadas', 2, 231);
+insert into libro (isbn, titulo, id_editorial, precio) values (21131, 'Teoria de la decision Fuzzy', 1, 99.99);
+insert into libro (isbn, titulo, id_editorial, precio) values (9929, 'Visual Basic Win32 API', 5, 631.25);
+
+insert into editorial (nombre, telefono, ciudad) values ('McGraw Hill', '5353-4545', 'Buenos Aires');
+insert into editorial (nombre, telefono, ciudad) values ('Prentice Hall', '5353-4321', 'Cordoba');
+insert into editorial (nombre, telefono, ciudad) values ('EUDEBA', '5353-1234', 'Buenos Aires');
+insert into editorial (nombre, telefono, ciudad) values ('UCES', '5555-4444', 'Buenos Aires');
+insert into editorial (nombre, telefono, ciudad) values ('Iberica', '+42 8123 3335', 'Madrid');
+insert into editorial (nombre, telefono, ciudad) values ('McGraw Hill US', '+1-555-312', 'Washington');
+
+insert into autor (nombre, fecha_nacimiento) values ('Aho', '1963-06-21');
+insert into autor (nombre, fecha_nacimiento) values ('Ullman', '1960-11-23');
+insert into autor (nombre, fecha_nacimiento) values ('Kerningahm', '1953-02-02');
+insert into autor (nombre, fecha_nacimiento) values ('Ritchie', '1958-09-03');
+insert into autor (nombre, fecha_nacimiento) values ('Pfaltz', '1947-02-01');
+insert into autor (nombre, fecha_nacimiento) values ('Kruze', '1927-05-08');
+
+insert into libro_autor (isbn, id_autor) values (11328, 1);
+insert into libro_autor (isbn, id_autor) values (11329, 2);
+insert into libro_autor (isbn, id_autor) values (11341, 3);
+insert into libro_autor (isbn, id_autor) values (21328, 2);
+insert into libro_autor (isbn, id_autor) values (21312, 4);
+insert into libro_autor (isbn, id_autor) values (21312, 1);
+insert into libro_autor (isbn, id_autor) values (21131, 5);
+insert into libro_autor (isbn, id_autor) values (21131, 2);
+insert into libro_autor (isbn, id_autor) values (9929, 5);
+insert into libro_autor (isbn, id_autor) values (9929, 1);
+insert into libro_autor (isbn, id_autor) values (9929, 2);
+insert into libro_autor (isbn, id_autor) values (9929, 3);
+insert into libro_autor (isbn, id_autor) values (9929, 4);
+
+CREATE TABLE Revista(
+rsbn INT NOT NULL,
+nombre_revista VARCHAR(90),
+id_editotial INT NOT NULL,
+precio DECIMAL(8,2)
+);
+
+INSERT INTO revista (rsbn,nombre_revista,id_editotial,precio) VALUES (31021,'Caras',1,400),
+(31022,'Gente',2,800),
+(31023,'Men',3,600),
+(31024,'Otakun',4,350);
+
+insert into editorial (nombre, telefono, ciudad) values ('Pepperoni', '2234-4435', 'Roma'),
+('Pastelli', '2526-4548', 'Siracusa');
+
+#5) Generar una vista "publicacion" que contenga tanto revistas como libros con precio < 250
+CREATE view publicacion AS
+SELECT precio FROM libro WHERE precio < 250
+union
+SELECT precio FROM Revista WHERE precio < 250
+
+/*6) Generar una vista "editoriales_sin_publicacion" que contenga a las editoriales que no
+tengan asociados libros ni revistas*/
+CREATE view editoriales_sin_publicacion AS
+SELECT nombre FROM editorial e WHERE NOT EXISTS (SELECT * FROM libro l WHERE e.id_editorial = l.id_editorial)
+UNION
+SELECT nombre FROM editorial e WHERE NOT EXISTS (SELECT * FROM Revista r WHERE e.id_editorial = r.id_editotial)
+
+#7) Modificar la tabla revista para que el nombre pase a ser de tipo varchar(250)
+ALTER TABLE revista MODIFY COLUMN nombre_revista VARCHAR(250);
+
+#8) Modificar los libros para que el precio de todos aumente un 15%
+update libro set precio =precio * 1.15;
+
+#9) Eliminar los libros con precio > 400
+DELETE FROM libro WHERE precio < 400;
+
+#10) Insertar un nuevo autor
+insert into autor (nombre, fecha_nacimiento) values ('Max', '1975-02-17');
+
+#11) Asignar el autor a todas las revistas
+INSERT INTO libro_autor (isbn,id_autor) 
+SELECT rsbn,7 FROM revista;
+
+/*12) Realizar una consulta que devuelva a los autores que hayan participado en la redacción
+de más de una publicación*/
+
+/*SELECT a.nombre,COUNT(id_autor) FROM autor a WHERE EXISTS(SELECT * FROM libro_autor la WHERE a.id_autor = la.id_autor)
+GROUP BY a.nombre
+HAVING COUNT(id_autor) >1;*/
+
+SELECT a.nombre,COUNT(la.id_autor) FROM autor a inner JOIN libro_autor la ON a.id_autor =la.id_autor
+GROUP BY a.nombre
+HAVING COUNT(la.id_autor)> 1;
+
+/*13) Generar una tabla "publicacion_un_autor" similar a libros y luego agregar aquellas
+publicaciones que que tengan un sólo autor*/
+
+create table publicacion_un_autor (
+  isbn int not null primary key,
+  titulo varchar(90),
+  id_editorial int,
+  precio decimal(8,2)
+);
+
+insert into publicacion_un_autor (isbn, titulo, id_editorial, precio) 
+SELECT l.isbn, l.titulo, l.id_editorial, l.precio FROM libro l INNER JOIN libro_autor la ON l.isbn =la.isbn
+GROUP BY l.isbn
+HAVING COUNT(la.isbn) =1;  
+
+#14) Eliminar la vista publicación
+DROP view publicacion

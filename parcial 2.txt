@@ -1,0 +1,90 @@
+CREATE database practica_parcial;
+
+#1.	Crear las tablas del esquema, incluyendo Foreign Keys Crear la tabla temporal FECHA.
+
+CREATE TABLE jugadores(
+codigo INT PRIMARY KEY AUTO_INCREMENT,
+nombre VARCHAR(30),
+precedencia VARCHAR(20),
+altura VARCHAR(4),
+peso INT,
+posicion VARCHAR(5),
+nombre_equipo VARCHAR(20),
+estado VARCHAR(20),
+FOREIGN KEY (nombre_equipo) REFERENCES equipos(nombre)
+);
+
+CREATE TABLE equipos(
+nombre VARCHAR(20) PRIMARY KEY,
+ciudad VARCHAR(20),
+conferencia VARCHAR(4),
+division VARCHAR(9)
+);
+
+CREATE TABLE partidos(
+codigo INT PRIMARY KEY AUTO_INCREMENT,
+equipo VARCHAR(20),
+puntos INT,
+temporada VARCHAR(5),
+fecha_partido DATETIME,
+FOREIGN KEY (equipo) REFERENCES equipos(nombre)
+);
+
+CREATE TABLE fecha(
+dia DATE
+);
+
+#2.	Insertar 5 equipos, 4 jugadores. 5 semanas  consecutivas a elección en la tabla FECHA.
+
+INSERT into fecha(dia) values
+(DATE_ADD(NOW(),INTERVAL 1 WEEK)),
+(DATE_ADD(NOW(),INTERVAL 2 WEEK)),
+(DATE_ADD(NOW(),INTERVAL 3 WEEK)),
+(DATE_ADD(NOW(),INTERVAL 4 WEEK)),
+(DATE_ADD(NOW(),INTERVAL 5 WEEK));  
+
+insert INTO equipos (nombre,ciudad,conferencia,division) VALUES
+('Boca','La boca','a1','A'),
+('River','Belgrano','a2','B'),
+('Tigre','Tigre','a3','C'),
+('Aldosivi','Mar del Plata','a4','C'),
+('Argentino Jr','Paternal','a5','D');
+
+INSERT INTO jugadores (nombre,precedencia,altura,peso,posicion,nombre_equipo,estado) VALUES
+('Palermo','Rincon de Milber','1.75',75,'Del','Boca','Bien'),
+('German','Ptagonia','1.77',78,'Vol','River','Lesionado'),
+('Dibu','Mar del Plata','1.87',84,'Arq','Aldosivi','Exelente'),
+('Messi','Rosario','1.65',68,'Del','Tigre','Bien');
+
+/*3.	Insertar partidos para todos los  equipos, para todas las fechas,  temporada 2023. Los puntos pueden calcularse con la cantidad de letras (LENGTH)
+ del equipo, y un cálculo que termine (........)%5 +1 (de modo que vaya de 1 a 5)
+Todas las combinaciones posibles.*/
+
+/*codigo INT PRIMARY KEY AUTO_INCREMENT,
+equipo VARCHAR(20),
+puntos INT,
+temporada VARCHAR(5),
+fecha_partido DATETIME*/
+
+INSERT INTO partidos (equipo,puntos,temporada,fecha_partido)
+SELECT e.nombre,(LENGTH(e.nombre)%5+1),'2023',f.dia FROM equipos e , fecha f;
+
+#4.Crear una vista con los puntos de cada equipo en los partidos  llamada Puntos_equipos_partidos.
+
+CREATE VIEW Puntos_equipos_partidos AS
+SELECT p.equipo,p.puntos FROM partidos p;
+
+/*5.	Agregar a  la tabla Jugadores la columna “Estado” de tipo varchar(10).
+Asignar para todos los  jugadores cuyo equipo no han realizado ningun partido ponerle ‘libre’ en la columna “Estado”*/
+
+ALTER TABLE jugadores ADD COLUMN Estado2 VARCHAR(10)
+
+update jugadores SET estado2 = 'libre' WHERE nombre_equipo not IN (SELECT distinct equipo FROM partidos ) 
+
+
+/*SELECT e.nombre FROM equipos e WHERE NOT EXISTS(SELECT * FROM partidos p WHERE e.nombre = p.equipo) */
+
+#6.	Siguiendo la lógica de las Foreign Keys, ejecutar todos los pasos necesarios para eliminar un equipo a elección.
+DELETE FROM jugadores WHERE nombre_equipo = 'Boca' 
+DELETE FROM partidos WHERE equipo = 'Boca'
+DELETE FROM equipos WHERE nombre = 'Boca'  

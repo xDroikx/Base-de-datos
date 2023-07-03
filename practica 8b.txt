@@ -1,0 +1,95 @@
+CREATE DATABASE practica8b;
+
+#1) Crear una tabla con una columna "nombre" que contenga 8 nombres
+
+CREATE TABLE nombres(
+nombre VARCHAR(90)
+); 
+
+insert INTO nombres (nombre) VALUES ('Hugo'),
+('Marcos'), 
+('Juliana'), 
+('Maira'), 
+('Cristian'), 
+('Micaela'), 
+('Mauro'), 
+('Luciana'); 
+
+
+
+#2) Crear una tabla de apellidos, con una columna apellido, que contenga 10 apellidos
+
+CREATE TABLE Apellidos(
+apellido VARCHAR(90)
+); 
+
+insert INTO apellidos (apellido) VALUES ('Fernandez'),
+('Romano'), 
+('Orlando'), 
+('Zilli'), 
+('Benetez'), 
+('Sierra'), 
+('Vidal'),
+('Perez'), 
+('Cineo'),  
+('Gamba'); 
+
+#3) Crear una tabla de materias con id y descripción. Insertar 4 materias.
+
+CREATE TABLE Materias(
+id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+descripcion VARCHAR (90)
+); 
+
+insert INTO Materias (descripcion) VALUES ('Matematica'),
+('Lengua'), 
+('Geografia'),
+('Quimica'); 
+
+#4) Crear una tabla alumnos con el esquema "NombreYApellido" poblándola con todas las combinaciones de nombres y apellidos. Deberán generarse 80 alumnos.
+
+CREATE TABLE Alumnos(
+NombreYApellido varchar(90)
+); 
+
+INSERT INTO alumnos(NombreYApellido)
+SELECT CONCAT(n.nombre," ",a.apellido) AS Nombre_apellido FROM nombres n,apellidos a
+
+
+/*5) Crear una tabla exámenes con el esquema "Nombre", "Materia", "Nota"
+   La nota puede calcularse con el id de la materia, la cantidad de letras (length) del nombre, y un cálculo que termine (........)%10 +1 (de modo que vaya de 1 a 10)
+   Todos los alumnos rindieron exámenes para todas las materias*/
+
+CREATE TABLE Examenes(
+nombre varchar(90),
+materia varchar(90),
+nota int
+); 
+
+INSERT INTO Examenes(nombre,materia,nota)
+SELECT a.NombreYApellido,m.descripcion,(LENGTH(a.NombreYApellido)*m.id%10+1)FROM alumnos a,materias m
+
+#6) Modificar la tabla de alumnos para que tenga una columna "Estado", alfanumérica
+ALTER TABLE alumnos ADD COLUMN Estado varchar (90)
+ALTER TABLE alumnos DROP COLUMN Estado #borrar columna
+#7) Para los alumnos que tengan algún aplazo, dejarle "Con Aplazo" en la columna "Estado"
+
+UPDATE alumnos SET Estado = 'con aplazo' WHERE NombreYApellido IN (SELECT distinct nombre FROM examenes WHERE nota <4)
+                             
+
+
+#8) Agregar columna Descripción en la tabla de exámenes
+
+ALTER TABLE examenes ADD COLUMN descripcion VARCHAR(90) 
+ALTER TABLE examenes DROP COLUMN descripcion
+#9) Generar filas sin nota en exámenes para los alumnos/materias con aplazos, con descripción recuperatorio
+
+
+UPDATE examenes SET descripcion = 'Recuperatorio' WHERE nota <4 ;
+UPDATE examenes 
+SET descripcion = CASE WHEN nota >= 4 
+then 'Aprobado' 
+when nota < 4
+then 'Recuperatorio'
+ELSE descripcion 
+END

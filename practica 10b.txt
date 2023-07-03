@@ -1,0 +1,129 @@
+CREATE DATABASE practica10b;
+
+create TABLE pais(
+id_pais CHAR(2) PRIMARY KEY,
+nombre VARCHAR(70),
+codigo_telefono CHAR(3)
+);
+
+CREATE TABLE ciudad(
+id_ciudad INT PRIMARY KEY AUTO_INCREMENT,
+nombre VARCHAR(50),
+estado char(2),
+pais CHAR(2),
+foreign KEY (pais) REFERENCEs pais(id_pais) 
+);
+
+CREATE TABLE propiedad(
+id_propiedad int PRIMARY KEY AUTO_INCREMENT,
+nombre VARCHAR(50),
+ciudad INT,
+descripcion VARCHAR(255),
+estrellas INT,
+foreign KEY (ciudad) REFERENCEs ciudad(id_ciudad) 
+);
+
+CREATE TABLE estado(
+id_estado CHAR(2) PRIMARY KEY ,
+nombre VARCHAR(100)
+);
+
+/*2. Insertar 3 países, 2 ciudades y 1 estado. Luego, insertar 5 propiedades. Una de
+las ciudades debe tener estado definido, la otra, no.*/
+
+INSERT INTO pais (id_pais,nombre,codigo_telefono) VALUES
+('aa','Bolivia',29),
+('ab','Argentina',54),
+('ac','Paraguay',17);
+
+INSERT INTO estado (id_estado,nombre) VALUES
+('aa','Texas'),
+('ab',NULL);
+
+INSERT INTO ciudad (nombre,estado,pais) VALUES
+('Cordoba','aa','ab'),
+('Roma','ab','aa');
+
+INSERT INTO propiedad (nombre,ciudad,descripcion,estrellas) VALUES
+('Casa bonita',1,'casita bonita',5),
+('Casa grande',2,'casota grandota',3),
+('Casa chiquita',1,'casita chiquita',4),
+('Casa larga',2,'casita larga',2),
+('Casa enorme',1,'casota enorme',3);
+
+/*3. Crear una vista, ciudad_recomendada, que muestre:
+a. id de ciudad
+b. nombre de ciudad,
+c. nombre de estado o la cadena “SIN ESTADO”, en caso de que no lo tenga
+d. cantidad de propiedades en esa ciudad*/
+
+CREATE VIEW ciudad_recomendada as
+SELECT c.id_ciudad AS IDciudad,c.nombre AS nombre_ciudad,
+case when e.nombre IS NULL 
+then 'sin estado'
+ELSE e.nombre END AS Estados ,COUNT(p.id_propiedad) AS cantidad_propiedad FROM ciudad c inner JOIN estado e ON c.estado = e.id_estado inner JOIN
+propiedad p ON c.id_ciudad = p.Ciudad
+GROUP BY c.id_ciudad, c.nombre, e.nombre;
+
+#4.Agregar a la tabla propiedad la columna aeropuerto_cercano de tipo char(3)
+
+ALTER TABLE propiedad ADD COLUMN aeropuerto_cercano CHAR(3);
+
+/*5. Crear:
+a. una tabla Facilidad con campos
+i. id int
+ii. descripcion varchar(50)
+b. una tabla propiedad_facilidad con campos:
+i. id int autonumerico
+ii. id_facilidad int
+iii. id_propiedad int
+Insertar 5 facilidades y filas en propiedad_facilidad para todas las propiedades y
+facilidades*/
+
+CREATE TABLE facilidad(
+id INT PRIMARY KEY AUTO_INCREMENT,
+descripcion varchar(50)
+);
+
+CREATE TABLE propiedad_facilidad(
+id INT PRIMARY KEY AUTO_INCREMENT,
+id_facilidad INT,
+id_propiedad int
+);
+
+INSERT INTO facilidad(descripcion) VALUES
+('muy facil'),
+('facil'),
+('medio'),
+('dificil'),
+('infierno en la tierra');
+
+INSERT INTO propiedad_facilidad (id_facilidad,id_propiedad)
+SELECT f.id,p.id_propiedad FROM facilidad f,propiedad p;                       
+
+/*6. Agregar foreign keys que relacionen a propiedad_facilidad con las dos tablas con
+las que se relaciona*/
+
+
+ALTER TABLE propiedad_facilidad
+ADD CONSTRAINT fk_facilidad FOREIGN KEY (id_facilidad) REFERENCES facilidad(id);
+
+ALTER TABLE propiedad_facilidad
+ADD CONSTRAINT fk_propiedad FOREIGN KEY (id_propiedad) REFERENCES propiedad(id_propiedad);
+
+/*7. Crear una vista con el id de propiedad y el nombre de propiedad, para aquellas
+que tengan todas las facilidades asignadas*/
+
+CREATE VIEW total_todo AS
+SELECT p.id_propiedad,p.nombre FROM propiedad p WHERE EXISTS(SELECT * FROM propiedad_facilidad pc WHERE p.id_propiedad = pc.id_propiedad); 
+
+#8. Eliminar la columna estrellas de la tabla propiedad
+
+ALTER TABLE propiedad DROP COLUMN estrellas;
+
+/*9. Agregar a la tabla propiedad la columna fecha_inauguración de tipo datetime.
+Asignar a todas las filas el valor de fecha una semana posterior a la actual*/
+
+ALTER TABLE propiedad ADD COLUMN fecha_inauguracion DATETIME;
+
+UPDATE propiedad SET fecha_inauguracion = DATE_ADD(NOW(),INTERVAL 1 WEEK)
